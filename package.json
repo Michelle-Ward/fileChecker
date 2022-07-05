@@ -1,0 +1,23 @@
+{
+  "name": "filechecker",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Michelle-Ward/fileChecker.git"
+  },
+  "author": "Michelle Ward",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Michelle-Ward/fileChecker/issues"
+  },
+  "homepage": "https://github.com/Michelle-Ward/fileChecker#readme",
+  "dependencies": {
+    "crypto": "^1.0.1",
+    "yargs": "^17.5.1"
+  }
+}
