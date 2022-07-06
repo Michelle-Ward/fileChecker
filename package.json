@@ -18,6 +18,7 @@
   "homepage": "https://github.com/Michelle-Ward/fileChecker#readme",
   "dependencies": {
     "crypto": "^1.0.1",
+    "dotenv": "^16.0.1",
     "yargs": "^17.5.1"
   }
 }
