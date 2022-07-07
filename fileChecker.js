@@ -11,14 +11,15 @@ const getHash = (file) => {
     return hash.end().read();
 }
 
-// create function to iterate over the correct output and log output
+// Logs file upload results in appropriate format
 const logResult = (result) => {
     // Check if status is 'In queue'
     let scanResults = result.scan_results;
-    console.log(`\n file_name: ${result.file_info.display_name} \n`);
+    console.log(`   file_name: ${result.file_info.display_name} \n`);
     if (scanResults.scan_all_result_a === 'In queue') {
-        console.log(`overall_status: In queue \n`);
+        console.log(`   overall_status: In queue \n`);
     } else {
+        console.log(`   overall_status: ${scanResults.scan_all_result_a} \n`);
         let engines = Object.keys(scanResults.scan_details);
         engines.forEach( ( engine ) => {
             let details = scanResults.scan_details[engine];
@@ -33,8 +34,9 @@ const logResult = (result) => {
     }
 }
 
+// Logs error and exits with appropriate message and error code
 const handleError = (error, message) => {
-    //If opswat error give code
+    // If opswat error give code
     if (typeof error?.response?.data === 'undefined' ) {
         console.log(message, error.code);
         // Exit with failure
@@ -45,26 +47,27 @@ const handleError = (error, message) => {
     }
 }
 
+// Continually requests information by dataId until progress_status is complete
 const pollByDataId = async (dataId) => {
     let options = {
         "method": "GET",
         "url": `https://api.metadefender.com/v4/file/${dataId}`,
         "headers": {
          "apikey": process.env.OPSWAT_KEY,
-        //  unknown what the integer should be using 1 for now
          "x-file-metadata": 1
         },
         "body": "{}"
     };
     let progressComplete = false;
-    //pull until progress is 100
+    // Request until progress is 100
     while (!progressComplete) {
         try {
             let result = await axios(`https://api.metadefender.com/v4/file/${dataId}`, options);
             logResult(result.data);
             if (result.data.scan_results.progress_percentage === 100) {
                 progressComplete = true;
-                process.exit(1)
+                console.log("Upload Completed!")
+                process.exit(0)
             }
         } catch (error) {
             handleError(error, "Error occurred while getting by data_id: ")
@@ -73,6 +76,7 @@ const pollByDataId = async (dataId) => {
    
 }
 
+// Converts given file to binary and uploads to metadefender. Calls appropriate handler for response.
 const uploadFile = async (targetFile) => {
   // Convert buffer version of file to binary
   let binary = Buffer.from(targetFile);
@@ -84,6 +88,7 @@ const uploadFile = async (targetFile) => {
       },
       data: binary,
   };
+  // Upload file
   try {
     let response = await axios("https://api.metadefender.com/v4/file", options);
     let dataId = response.data.data_id;
