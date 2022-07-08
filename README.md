@@ -3,7 +3,7 @@
 
 ## Prerequisites
 
-This project uses npm and Node v14 or v16. Installation instructions can be found in the [npm docs](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm). An API key from opswat is required for make request to the MetaDefender API.
+This project uses npm and Node v14 or v16. Installation instructions can be found in the [npm docs](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm). An API key from opswat is required to make requests to the MetaDefender API.
 
 ## Installation
 
