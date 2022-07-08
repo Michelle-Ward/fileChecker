@@ -1,7 +1,8 @@
 const fs = require('fs');
 const crypto = require('crypto');
 const axios = require('axios');
-require('dotenv').config()
+const yargs = require('yargs/yargs');
+require('dotenv').config();
 
 // Gets md5 hash of file given
 const getHash = (file) => {
@@ -9,7 +10,7 @@ const getHash = (file) => {
     hash.write(file);
     hash.setEncoding('hex');
     return hash.end().read();
-}
+};
 
 // Logs file upload results in appropriate format
 const logResult = (result) => {
@@ -23,16 +24,16 @@ const logResult = (result) => {
         let engines = Object.keys(scanResults.scan_details);
         engines.forEach( ( engine ) => {
             let details = scanResults.scan_details[engine];
-            console.log(details.threat_found)
+            console.log(details.threat_found);
             console.log(`
                 engine: ${engine} \n
                 threat_found: ${details.threat_found} \n
                 scan_result: ${details.scan_result_i} \n
                 def_time: ${details.def_time}\n
-            `)
+            `);
         })
     }
-}
+};
 
 // Logs error and exits with appropriate message and error code
 const handleError = (error, message) => {
@@ -40,12 +41,13 @@ const handleError = (error, message) => {
     if (typeof error?.response?.data === 'undefined' ) {
         console.log(message, error.code);
         // Exit with failure
-        process.exit(1)
+        process.exit(1);
     } else {
+        // Axios error
         console.log(message, error.code);
-        process.exit(1)
+        process.exit(1);
     }
-}
+};
 
 // Continually requests information by dataId until progress_status is complete
 const pollByDataId = async (dataId) => {
@@ -59,22 +61,22 @@ const pollByDataId = async (dataId) => {
         "body": "{}"
     };
     let progressComplete = false;
-    // Request until progress is 100
+    // Request until progress completer
     while (!progressComplete) {
         try {
+            // 
             let result = await axios(`https://api.metadefender.com/v4/file/${dataId}`, options);
             logResult(result.data);
             if (result.data.scan_results.progress_percentage === 100) {
                 progressComplete = true;
-                console.log("Upload Completed!")
-                process.exit(0)
+                console.log("Scan Completed!");
+                process.exit(0);
             }
         } catch (error) {
-            handleError(error, "Error occurred while getting by data_id: ")
+            handleError(error, "Error occurred while getting by data_id: ");
         }
     }
-   
-}
+};
 
 // Converts given file to binary and uploads to metadefender. Calls appropriate handler for response.
 const uploadFile = async (targetFile) => {
@@ -99,7 +101,19 @@ const uploadFile = async (targetFile) => {
 }
 
 // Pulls path to file given with path argument
-let filePath = require('yargs/yargs')(process.argv.slice(2)).argv.path;
+let filePath = yargs(process.argv.slice(2)).argv?.path;
+
+// Log error and exit if path variable is not given
+if (typeof filePath === "undefined") {
+    console.log("ERROR: File path was not given. Add file path with --path argument");
+    process.exit(1);
+}
+
+// Log error and exit if api key cannot be found
+if (typeof process.env.OPSWAT_KEY === "undefined") {
+    console.log("ERROR: API key was not found. Refer to readme for creating .env file to store key");
+    process.exit(1);
+}
 
 // Read file with given file path outputs a buffer
 let file = fs.readFileSync(filePath);
