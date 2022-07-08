@@ -1,6 +1,5 @@
 # Getting Started
 
----
 
 ## Prerequisites
 
@@ -18,7 +17,6 @@ This project uses npm and Node v14 or v16. Installation instructions can be foun
 
 # Usage
 
----
 
 To start program, run command with path to file:
 
