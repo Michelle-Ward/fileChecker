@@ -24,7 +24,6 @@ const logResult = (result) => {
         let engines = Object.keys(scanResults.scan_details);
         engines.forEach( ( engine ) => {
             let details = scanResults.scan_details[engine];
-            console.log(details.threat_found);
             console.log(`
                 engine: ${engine} \n
                 threat_found: ${details.threat_found} \n
